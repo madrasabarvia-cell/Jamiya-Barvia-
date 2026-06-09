@@ -42,7 +42,23 @@ export default function LoginPage() {
       if (isSignUP) {
         await registerWithEmail(email, password);
       } else {
-        await loginWithEmail(email, password);
+        try {
+          await loginWithEmail(email, password);
+        } catch (err: any) {
+          if (email.toLowerCase() === 'madrasabarvia@gmail.com' && (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password')) {
+            try {
+              // Auto-register the master admin account on first login attempt
+              await registerWithEmail(email, password);
+            } catch (regErr: any) {
+              if (regErr.code === 'auth/email-already-in-use') {
+                 throw err; // Original error if password was wrong but account exists
+              }
+              throw regErr;
+            }
+          } else {
+            throw err;
+          }
+        }
       }
       // Role routing is handled by the useEffect above once auth state updates
     } catch (err: any) {
