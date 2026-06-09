@@ -3,7 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { UserCircle, Calendar, BookOpen, KeyRound, Menu, X, LayoutDashboard } from 'lucide-react';
+import { UserCircle, Calendar, BookOpen, KeyRound, Menu, X, LayoutDashboard, Video } from 'lucide-react';
 import { format } from 'date-fns';
 import { getAuth, updatePassword } from 'firebase/auth';
 
@@ -13,6 +13,7 @@ export default function StudentDashboard() {
   const [profile, setProfile] = useState<any>(null);
   const [attendances, setAttendances] = useState<any[]>([]);
   const [reports, setReports] = useState<any[]>([]);
+  const [videos, setVideos] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState('profile');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -49,6 +50,13 @@ export default function StudentDashboard() {
     const qRep = query(collection(db, 'daily_reports'), where('studentId', '==', studentDocId));
     const repSnap = await getDocs(qRep);
     setReports(repSnap.docs.map(d => d.data()));
+
+    try {
+      const vidSnap = await getDocs(collection(db, 'videos'));
+      setVideos(vidSnap.docs.map(d => d.data()));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleChangePassword = async (e: React.FormEvent) => {
@@ -73,6 +81,7 @@ export default function StudentDashboard() {
     { id: 'lessons', icon: BookOpen, label: t('My Lessons', 'میرے اسباق') },
     { id: 'namaz', icon: BookOpen, label: t('My Namaz Record', 'میری نماز کا ریکارڈ') },
     { id: 'reports', icon: LayoutDashboard, label: t('My Reports', 'میری رپورٹس') },
+    { id: 'videos', icon: Video, label: t('Educational Videos', 'تعلیمی ویڈیوز') },
     { id: 'password', icon: KeyRound, label: t('Change Password', 'پاس ورڈ تبدیل کریں') },
   ];
 
@@ -231,6 +240,46 @@ export default function StudentDashboard() {
               </div>
             ))}
             {reports.length === 0 && <p className="text-gray-500 font-urdu text-center py-8">{t('No reports found.', 'کوئی رپورٹ نہیں ملی۔')}</p>}
+          </div>
+        )}
+
+        {/* Videos Tab */}
+        {activeTab === 'videos' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {videos.map((video, idx) => {
+              const getYouTubeId = (url: string) => {
+                const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+                const match = url.match(regExp);
+                return (match && match[2].length === 11) ? match[2] : null;
+              };
+              const videoId = getYouTubeId(video.url);
+              return (
+                <div key={idx} className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200">
+                  {videoId ? (
+                    <div className="aspect-video relative">
+                      <iframe 
+                        src={`https://www.youtube.com/embed/${videoId}`} 
+                        className="absolute top-0 left-0 w-full h-full"
+                        allowFullScreen 
+                      ></iframe>
+                    </div>
+                  ) : (
+                    <div className="aspect-video bg-gray-100 flex items-center justify-center">
+                      <Video className="w-12 h-12 text-gray-400" />
+                    </div>
+                  )}
+                  <div className="p-4">
+                    <h3 className="font-bold font-urdu text-lg mb-1">{video.titleUrdu}</h3>
+                    <h4 className="text-sm font-sans text-gray-600" dir="ltr">{video.title}</h4>
+                  </div>
+                </div>
+              );
+            })}
+            {videos.length === 0 && (
+              <div className="col-span-full py-12 text-center text-gray-500 font-urdu rounded-xl">
+                {t('No educational videos available.', 'کوئی تعلیمی ویڈیو دستیاب نہیں۔')}
+              </div>
+            )}
           </div>
         )}
 

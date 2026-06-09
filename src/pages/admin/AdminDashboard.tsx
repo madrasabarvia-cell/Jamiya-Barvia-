@@ -2,7 +2,7 @@ import React from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useAuth } from '../../contexts/AuthContext';
-import { Users, ClipboardList, BookOpen, HandCoins, MinusCircle, FileBarChart, LayoutDashboard, Bell } from 'lucide-react';
+import { Users, ClipboardList, BookOpen, HandCoins, MinusCircle, FileBarChart, LayoutDashboard, Bell, Video } from 'lucide-react';
 import DashboardHome from './DashboardHome';
 import ManageStudents from './ManageStudents';
 import ManageAttendance from './ManageAttendance';
@@ -11,6 +11,7 @@ import ManageIncome from './ManageIncome';
 import ManageExpenses from './ManageExpenses';
 import ReportsDashboard from './ReportsDashboard';
 import AdminNotifications from './AdminNotifications';
+import ManageVideos from './ManageVideos';
 
 export default function AdminDashboard() {
   const { t } = useLanguage();
@@ -25,6 +26,7 @@ export default function AdminDashboard() {
     { name: t('Students', 'طلباء'), href: `${basePath}/students`, icon: Users, exact: false },
     { name: t('Attendance', 'حاضری'), href: `${basePath}/attendance`, icon: ClipboardList, exact: false },
     { name: t('Daily Reports', 'روزانہ رپورٹ'), href: `${basePath}/daily-reports`, icon: BookOpen, exact: false },
+    { name: t('Educational Videos', 'تعلیمی ویڈیوز'), href: `${basePath}/videos`, icon: Video, exact: false },
     { name: t('Income', 'آمدنی'), href: `${basePath}/income`, icon: HandCoins, exact: false },
     { name: t('Expenses', 'اخراجات'), href: `${basePath}/expenses`, icon: MinusCircle, exact: false },
     { name: t('Exports & Analytics', 'رپورٹس اور تجزیہ'), href: `${basePath}/reports`, icon: FileBarChart, exact: false },
@@ -76,6 +78,7 @@ export default function AdminDashboard() {
           <Route path="/students/*" element={<ManageStudents />} />
           <Route path="/attendance/*" element={<ManageAttendance />} />
           <Route path="/daily-reports/*" element={<ManageReports />} />
+          <Route path="/videos/*" element={<ManageVideos />} />
           {isAdmin && (
             <>
               <Route path="/income/*" element={<ManageIncome />} />

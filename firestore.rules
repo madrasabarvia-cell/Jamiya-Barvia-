@@ -66,6 +66,11 @@ service cloud.firestore {
     match /expenses/{expenseId} {
       allow read, write: if isAdmin();
     }
+
+    match /videos/{videoId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
   }
 }
 

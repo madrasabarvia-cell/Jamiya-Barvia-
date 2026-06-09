@@ -3,12 +3,15 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { loginWithEmail, registerWithEmail } from '../firebase';
 import { ShieldAlert, LogIn, UserPlus } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function LoginPage() {
   const { t } = useLanguage();
   const { userData, user, isAdmin, isStudent, isTeacher } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const defaultTab = location.state?.defaultTab || 'student';
+  
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isSignUP, setIsSignUp] = useState(false);
@@ -69,12 +72,13 @@ export default function LoginPage() {
       <div className="bg-white p-10 rounded-2xl shadow-lg border-t-4 border-emerald-600 flex flex-col w-full max-w-md">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold font-urdu text-emerald-900 mb-2">
-            {isSignUP ? t('Create an Account', 'اکاؤنٹ بنائیں') : t('Sign In', 'لاگ ان کریں')}
+            {defaultTab === 'admin' && !isSignUP ? t('Admin Login', 'ایڈمن لاگ ان') : 
+             isSignUP ? t('Create an Account', 'اکاؤنٹ بنائیں') : t('Student Login', 'طالب علم لاگ ان')}
           </h2>
           <p className="text-gray-500 font-urdu">
             {isSignUP 
-              ? t('Sign up to access the portal.', 'پورٹل تک رسائی کے لیے رجسٹر کریں۔') 
-              : t('Login to access your account.', 'اپنے اکاؤنٹ تک رسائی کے لیے لاگ ان کریں۔')
+              ? t('Sign up to submit admission request.', 'داخلہ کی درخواست جمع کرنے کے لیے رجسٹر کریں۔') 
+              : t('Login to access your dashboard.', 'ڈیش بورڈ تک رسائی کے لیے لاگ ان کریں۔')
             }
           </p>
         </div>
@@ -117,18 +121,20 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-6 text-center">
-          <button 
-            type="button" 
-            onClick={() => { setIsSignUp(!isSignUP); setError(null); }}
-            className="text-emerald-600 hover:text-emerald-800 font-urdu focus:outline-none"
-          >
-            {isSignUP 
-              ? t('Already have an account? Sign In', 'پہلے سے ہی ایک اکاؤنٹ ہے؟ لاگ ان کریں') 
-              : t("Don't have an account? Sign Up", 'اکاؤنٹ نہیں ہے؟ رجسٹر کریں')
-            }
-          </button>
-        </div>
+        {defaultTab !== 'admin' && (
+          <div className="mt-6 text-center">
+            <button 
+              type="button" 
+              onClick={() => { setIsSignUp(!isSignUP); setError(null); }}
+              className="text-emerald-600 hover:text-emerald-800 font-urdu focus:outline-none"
+            >
+              {isSignUP 
+                ? t('Already have an account? Sign In', 'پہلے سے ہی ایک اکاؤنٹ ہے؟ لاگ ان کریں') 
+                : t("Don't have an account? Sign Up", 'اکاؤنٹ نہیں ہے؟ رجسٹر کریں')
+              }
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
