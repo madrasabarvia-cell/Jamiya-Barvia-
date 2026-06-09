@@ -112,7 +112,30 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium font-urdu text-gray-700 mb-1">{t('Password', 'پاس ورڈ')}</label>
+            <div className="flex justify-between items-center mb-1">
+              <label className="block text-sm font-medium font-urdu text-gray-700">{t('Password', 'پاس ورڈ')}</label>
+              {!isSignUP && (
+                <button 
+                  type="button" 
+                  onClick={async () => {
+                    if (!email) {
+                      setError(t('Please enter your email first to reset password.', 'پاس ورڈ ری سیٹ کرنے کے لیے پہلے ای میل درج کریں۔'));
+                      return;
+                    }
+                    try {
+                      const { getAuth, sendPasswordResetEmail } = await import('firebase/auth');
+                      await sendPasswordResetEmail(getAuth(), email);
+                      setError(t('Password reset email sent. Please check your inbox.', 'پاس ورڈ ری سیٹ ای میل بھیج دی گئی ہے۔ براہ کرم اپنا ان باکس چیک کریں۔'));
+                    } catch (err: any) {
+                      setError(err.message || 'Failed to send reset email.');
+                    }
+                  }}
+                  className="text-xs text-emerald-600 hover:text-emerald-800 font-urdu focus:outline-none"
+                >
+                  {t('Forgot Password?', 'پاس ورڈ بھول گئے؟')}
+                </button>
+              )}
+            </div>
             <input 
               type="password" 
               required
