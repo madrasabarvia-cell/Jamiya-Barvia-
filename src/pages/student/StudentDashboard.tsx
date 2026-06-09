@@ -27,13 +27,36 @@ export default function StudentDashboard() {
     async function fetchData() {
       if (userData?.studentId) {
         try {
-          const { doc: firestoreDoc, getDoc } = await import('firebase/firestore');
-          const docRef = firestoreDoc(db, 'students', userData.studentId);
-          const stuSnap = await getDoc(docRef);
-          
-          if (stuSnap.exists()) {
-            setProfile({ id: stuSnap.id, ...stuSnap.data() });
-            fetchRecords(stuSnap.id);
+          let docSnapId = '';
+          if (userData.studentDocId) {
+             const { doc: firestoreDoc, getDoc } = await import('firebase/firestore');
+             const stuSnap = await getDoc(firestoreDoc(db, 'students', userData.studentDocId));
+             if (stuSnap.exists()) {
+               docSnapId = stuSnap.id;
+               setProfile({ id: stuSnap.id, ...stuSnap.data() });
+             }
+          } else {
+             let q;
+             if (user?.uid) {
+               q = query(collection(db, 'students'), where('userId', '==', user.uid));
+             } else {
+               q = query(collection(db, 'students'), where('studentId', '==', userData.studentId));
+             }
+             const stuSnap = await getDocs(q);
+             
+             if (!stuSnap.empty) {
+               const docSnap = stuSnap.docs[0];
+               docSnapId = docSnap.id;
+               setProfile({ id: docSnap.id, ...docSnap.data() });
+               
+               if (user?.uid) {
+                 const { doc: firestoreDoc, updateDoc } = await import('firebase/firestore');
+                 await updateDoc(firestoreDoc(db, 'users', user.uid), { studentDocId: docSnapId });
+               }
+             }
+          }
+          if (docSnapId) {
+             fetchRecords(docSnapId);
           }
         } catch (err) {
           console.error("Error fetching student profile:", err);

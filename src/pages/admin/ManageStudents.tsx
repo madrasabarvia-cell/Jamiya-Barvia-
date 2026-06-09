@@ -131,14 +131,18 @@ export default function ManageStudents() {
         
         if (authUser) {
            studentDocInfo.userId = authUser.uid;
+        }
+
+        const docRef = await addDoc(collection(db, 'students'), studentDocInfo);
+
+        if (authUser) {
            await setDoc(doc(db, 'users', authUser.uid), {
              role: formData.status === 'approved' ? 'student' : 'unverified',
              studentId: genId,
+             studentDocId: docRef.id,
              email: formData.gmail
            });
         }
-
-        await addDoc(collection(db, 'students'), studentDocInfo);
       }
       setIsModalOpen(false);
       loadStudents();
