@@ -1,0 +1,121 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "System users (Admins and Students)",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "student"] },
+        "studentId": { "type": "string", "description": "Reference to student document if role is student" }
+      },
+      "required": ["email", "role"]
+    },
+    "Student": {
+      "title": "Student",
+      "description": "Student record details",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string" },
+        "name": { "type": "string" },
+        "nameUrdu": { "type": "string" },
+        "fatherName": { "type": "string" },
+        "caste": { "type": "string" },
+        "age": { "type": "number" },
+        "address": { "type": "string" },
+        "mobileNumber": { "type": "string" },
+        "gmail": { "type": "string" },
+        "admissionDate": { "type": "string" },
+        "reference": { "type": "string" },
+        "photoUrl": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["studentId", "name", "fatherName"]
+    },
+    "Attendance": {
+      "title": "Attendance",
+      "description": "Daily attendance record for a student",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string" },
+        "date": { "type": "string", "description": "YYYY-MM-DD format" },
+        "status": { "type": "string", "enum": ["present", "absent", "leave"] },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["studentId", "date", "status"]
+    },
+    "DailyReport": {
+      "title": "Daily Report",
+      "description": "Daily educational and namaz report",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string" },
+        "date": { "type": "string" },
+        "sabq": { "type": "boolean" },
+        "sabqi": { "type": "boolean" },
+        "manzil": { "type": "boolean" },
+        "duas": { "type": "boolean" },
+        "fajr": { "type": "string", "enum": ["performed", "missed"] },
+        "zuhr": { "type": "string", "enum": ["performed", "missed"] },
+        "asr": { "type": "string", "enum": ["performed", "missed"] },
+        "maghrib": { "type": "string", "enum": ["performed", "missed"] },
+        "isha": { "type": "string", "enum": ["performed", "missed"] },
+        "remarks": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["studentId", "date"]
+    },
+    "Income": {
+      "title": "Income",
+      "description": "Financial income record",
+      "type": "object",
+      "properties": {
+        "donorName": { "type": "string" },
+        "amount": { "type": "number" },
+        "date": { "type": "string" },
+        "remarks": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["amount", "date", "createdAt"]
+    },
+    "Expense": {
+      "title": "Expense",
+      "description": "Financial expense record",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "amount": { "type": "number" },
+        "date": { "type": "string" },
+        "description": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["title", "amount", "date", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User roles and mappings"
+    },
+    "/students/{studentDocId}": {
+      "schema": { "$ref": "#/entities/Student" },
+      "description": "Student profiles"
+    },
+    "/attendance/{attendanceId}": {
+      "schema": { "$ref": "#/entities/Attendance" },
+      "description": "Daily attendance"
+    },
+    "/daily_reports/{reportId}": {
+      "schema": { "$ref": "#/entities/DailyReport" },
+      "description": "Daily performance reports"
+    },
+    "/income/{incomeId}": {
+      "schema": { "$ref": "#/entities/Income" },
+      "description": "Income records"
+    },
+    "/expenses/{expenseId}": {
+      "schema": { "$ref": "#/entities/Expense" },
+      "description": "Expense records"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Jamiya Naqshbandia Barvia Rizvia MS",
+  "description": "Bilingual Management System for Jamiya Naqshbandia Barvia Rizvia. Includes Supervisor/Teacher profiles, Student Management, Attendance, Reports, Admin/Financial Dashboards, and more. Built with React, Tailwind, and Firebase.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

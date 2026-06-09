@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-urdu: "Noto Nastaliq Urdu", "Amiri", serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+
+  --color-emerald-50: #fdfcf0;
+  --color-emerald-100: #0f6b52;
+  --color-emerald-500: #0f6b52;
+  --color-emerald-600: #064e3b;
+  --color-emerald-700: #0f6b52;
+  --color-emerald-800: #064e3b;
+  --color-emerald-900: #064e3b;
+
+  --color-gold-400: #c5a059;
+  --color-gold-500: #c5a059;
+  --color-gold-600: #b08d4b;
+  
+  --color-gray-50: #fdfcf0;
+  --color-gray-100: #efeed6;
+  --color-gray-200: #e2e0bc;
+  --color-gray-500: #8c9071;
+  --color-gray-600: #5b6754;
+  --color-gray-700: #3f4c40;
+  --color-gray-900: #1a2e26;
+  
+  --color-white: #fdfcf0;
+}
+
+body {
+  background-color: #fdfcf0;
+  color: #1a2e26;
+}
+
+@layer utilities {
+  .bg-islamic-pattern {
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0wIDBoNDB2NDBIMHoiLz48cGF0aCBzdHJva2U9IiNjNWEwNTkiIHN0cm9rZS1vcGFjaXR5PSIuMDUiIGQ9Ik0yMCAwbDIwIDIwLTIwIDIwTDAgMjB6Ii8+PC9nPjwvc3ZnPg==");
+  }
+}
