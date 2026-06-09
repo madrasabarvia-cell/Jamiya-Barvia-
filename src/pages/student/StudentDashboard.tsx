@@ -15,6 +15,7 @@ export default function StudentDashboard() {
   const [reports, setReports] = useState<any[]>([]);
   const [videos, setVideos] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState('profile');
+  const [reportFilter, setReportFilter] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('daily');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Change Password state
@@ -225,7 +226,14 @@ export default function StudentDashboard() {
         {/* Reports Tab */}
         {activeTab === 'reports' && (
           <div className="space-y-4">
-            {reports.sort((a,b) => b.date.localeCompare(a.date)).map((rep, i) => (
+            <div className="flex flex-wrap gap-2 mb-6">
+              <button onClick={() => setReportFilter('daily')} className={`px-4 py-2 rounded-lg font-urdu text-sm ${reportFilter === 'daily' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>{t('Daily', 'روزانہ')}</button>
+              <button onClick={() => setReportFilter('weekly')} className={`px-4 py-2 rounded-lg font-urdu text-sm ${reportFilter === 'weekly' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>{t('Weekly', 'ہفتہ وار')}</button>
+              <button onClick={() => setReportFilter('monthly')} className={`px-4 py-2 rounded-lg font-urdu text-sm ${reportFilter === 'monthly' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>{t('Monthly', 'ماہانہ')}</button>
+              <button onClick={() => setReportFilter('yearly')} className={`px-4 py-2 rounded-lg font-urdu text-sm ${reportFilter === 'yearly' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>{t('Yearly', 'سالانہ')}</button>
+            </div>
+            
+            {reportFilter === 'daily' && reports.sort((a,b) => b.date.localeCompare(a.date)).map((rep, i) => (
               <div key={i} className="p-4 bg-gray-50 rounded-lg border border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="font-bold font-sans text-emerald-800" dir="ltr">{format(new Date(rep.date), 'dd MMM yyyy')}</div>
                 <div className="flex-1">
@@ -239,7 +247,32 @@ export default function StudentDashboard() {
                 </div>
               </div>
             ))}
-            {reports.length === 0 && <p className="text-gray-500 font-urdu text-center py-8">{t('No reports found.', 'کوئی رپورٹ نہیں ملی۔')}</p>}
+
+            {reportFilter !== 'daily' && (
+              <div className="p-8 text-center bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                <LayoutDashboard className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <h3 className="font-bold font-urdu text-lg text-gray-700">
+                  {reportFilter === 'weekly' ? t('Weekly Summary', 'ہفتہ وار خلاصہ') : 
+                   reportFilter === 'monthly' ? t('Monthly Summary', 'ماہانہ خلاصہ') : 
+                   t('Yearly Summary', 'سالانہ خلاصہ')}
+                </h3>
+                <p className="text-gray-500 mt-2 font-urdu">
+                  {t('Summary reports will be generated here based on available performance data.', 'دستیاب کارکردگی کے ڈیٹا کی بنیاد پر خلاصہ رپورٹیں یہاں تیار کی جائیں گی۔')}
+                </p>
+                <div className="mt-6 inline-flex gap-4 p-4 rounded-lg bg-emerald-50 border border-emerald-100">
+                   <div className="text-center px-4 border-r border-emerald-200">
+                     <div className="text-2xl font-bold font-sans text-emerald-700">{reports.length}</div>
+                     <div className="text-xs font-urdu text-emerald-600 mt-1">{t('Total Submissions', 'کل جمع کرائے گئے')}</div>
+                   </div>
+                   <div className="text-center px-4">
+                     <div className="text-2xl font-bold font-sans text-emerald-700">{attendances.length}</div>
+                     <div className="text-xs font-urdu text-emerald-600 mt-1">{t('Total Attendance', 'کل حاضری')}</div>
+                   </div>
+                </div>
+              </div>
+            )}
+
+            {reportFilter === 'daily' && reports.length === 0 && <p className="text-gray-500 font-urdu text-center py-8">{t('No reports found.', 'کوئی رپورٹ نہیں ملی۔')}</p>}
           </div>
         )}
 
