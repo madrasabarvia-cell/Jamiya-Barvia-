@@ -8,6 +8,17 @@ export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 
+// Secondary App to create users without logging out current Admin
+const secondaryApp = initializeApp(firebaseConfig, "Secondary");
+const secondaryAuth = getAuth(secondaryApp);
+
+export const createStudentUser = async (email: string, password: string) => {
+  const result = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+  // Important: signOut the secondary auth right away
+  await signOut(secondaryAuth);
+  return result.user;
+};
+
 export const loginWithGoogle = async () => {
   const result = await signInWithPopup(auth, googleProvider);
   return result.user;

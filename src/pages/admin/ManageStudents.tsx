@@ -28,6 +28,8 @@ export default function ManageStudents() {
     reference: '',
     status: 'approved',
   });
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const loadStudents = async () => {
     try {
@@ -46,6 +48,7 @@ export default function ManageStudents() {
   const openAddModal = () => {
     setEditStudent(null);
     setFormData({ nameUrdu: '', name: '', fatherName: '', caste: '', age: '', address: '', mobileNumber: '', gmail: '', admissionDate: '', reference: '', status: 'approved' });
+    setPassword('');
     setIsModalOpen(true);
   };
 
@@ -64,6 +67,7 @@ export default function ManageStudents() {
       reference: student.reference || '',
       status: student.status || 'approved',
     });
+    setPassword('');
     setIsModalOpen(true);
   };
 
@@ -105,18 +109,44 @@ export default function ManageStudents() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       if (editStudent) {
         await updateDoc(doc(db, 'students', editStudent.id), formData);
       } else {
+        let authUser = null;
+        if (formData.gmail && password) {
+          const { createStudentUser } = await import('../../firebase');
+          try {
+            authUser = await createStudentUser(formData.gmail, password);
+          } catch (err: any) {
+            alert('Error creating user account: ' + err.message);
+            setLoading(false);
+            return;
+          }
+        }
+
         const genId = 'ST-' + Math.floor(1000 + Math.random() * 9000);
-        await addDoc(collection(db, 'students'), { ...formData, studentId: genId, createdAt: new Date().toISOString() });
+        const studentDocInfo: any = { ...formData, studentId: genId, createdAt: new Date().toISOString() };
+        
+        if (authUser) {
+           studentDocInfo.userId = authUser.uid;
+           await setDoc(doc(db, 'users', authUser.uid), {
+             role: formData.status === 'approved' ? 'student' : 'unverified',
+             studentId: genId,
+             email: formData.gmail
+           });
+        }
+
+        await addDoc(collection(db, 'students'), studentDocInfo);
       }
       setIsModalOpen(false);
       loadStudents();
     } catch (err) {
       console.error(err);
       alert('Error saving data');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -288,10 +318,17 @@ export default function ManageStudents() {
                   <label className="block text-sm font-medium font-urdu text-gray-700 mb-1">{t('Admission Date', 'تاریخ داخلہ')}</label>
                   <input type="date" className="w-full border rounded-lg px-3 py-2 font-sans" dir="ltr" value={formData.admissionDate} onChange={e => setFormData({...formData, admissionDate: e.target.value})} />
                 </div>
+                {!editStudent && (
+                  <div>
+                    <label className="block text-sm font-medium font-urdu text-gray-700 mb-1">{t('Login Password', 'لاگ ان پاس ورڈ')}</label>
+                    <input type="text" placeholder={t('Assign a initial password', 'ابتدائی پاس ورڈ تفویض کریں')} className="w-full border rounded-lg px-3 py-2 font-sans" dir="ltr" minLength={6} value={password} onChange={e => setPassword(e.target.value)} />
+                    <p className="text-xs text-gray-500 mt-1 font-urdu">{t('If email is provided, filling this will create a login account for the student.', 'اگر ای میل فراہم کی گئی ہے، تو اسے پُر کرنے سے طالب علم کا لاگ ان اکاؤنٹ بن جائے گا۔')}</p>
+                  </div>
+                )}
               </div>
               <div className="flex justify-end space-x-3 space-x-reverse pt-4 border-t mt-4">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50 font-urdu">{t('Cancel', 'منسوخ کریں')}</button>
-                <button type="submit" className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-urdu">{t('Save', 'محفوظ کریں')}</button>
+                <button type="submit" disabled={loading} className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-urdu disabled:opacity-70">{loading ? t('Saving...', 'محفوظ کر رہا ہے...') : t('Save', 'محفوظ کریں')}</button>
               </div>
             </form>
           </div>

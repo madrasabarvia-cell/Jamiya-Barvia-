@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (firebaseUser.email?.toLowerCase() === 'madrasabarvia@gmail.com') {
             fetchedUserData = { role: 'admin', email: firebaseUser.email };
           } else {
-            fetchedUserData = { role: 'unverified', email: firebaseUser.email || undefined };
+            fetchedUserData = { role: 'unverified', email: firebaseUser.email || null };
           }
           // Create the user document
           await setDoc(userDocRef, fetchedUserData);
